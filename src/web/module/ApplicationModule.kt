@@ -1,7 +1,7 @@
 package web.module
 
-import application.MoneyTransferConcurrencyWrapper
-import application.MoneyTransferConcurrencyWrapperIml
+import application.MutexWrapper
+import application.MutexWrapperIml
 import application.commands.CommandHandler
 import application.commands.CreateTransferCommand
 import application.commands.CreateTransferCommandHandler
@@ -31,5 +31,5 @@ val applicationModule = module {
     factory { AccountQueries(get()) }
     factory { TransactionQueries(get()) }
     single<Mediator> { ApplicationMediator() }
-    single<MoneyTransferConcurrencyWrapper> { MoneyTransferConcurrencyWrapperIml() }
+    single<MutexWrapper> { MutexWrapperIml() }
 }

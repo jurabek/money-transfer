@@ -2,22 +2,22 @@ package application.queries
 
 import application.dtos.account.AccountBalanceDto
 import application.dtos.account.AccountDto
-import domain.account.AccountRepository
+import domain.account.BankAccountRepository
 import java.util.*
 
-class AccountQueries(private val accountRepository: AccountRepository) {
+class AccountQueries(private val bankAccountRepository: BankAccountRepository) {
     fun getAllAccounts(): List<AccountDto> {
-        return accountRepository.getAll().map {
+        return bankAccountRepository.getAll().map {
             AccountDto(
                 it.id,
-                it.balance,
-                it.currency
+                it.balance.amount,
+                it.balance.currency
             )
         }
     }
 
     fun getAccountBalanceById(id: UUID): AccountBalanceDto {
-        val account = accountRepository.getById(id)
-        return AccountBalanceDto(account.balance, account.currency)
+        val account = bankAccountRepository.getById(id)
+        return AccountBalanceDto(account.balance.amount, account.balance.currency)
     }
 }

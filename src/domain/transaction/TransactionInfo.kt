@@ -1,18 +1,18 @@
-package domain.account
+package domain.transaction
 
 import domain.Entity
 import java.math.BigDecimal
 import java.util.*
 
-data class AccountTransaction(
+data class TransactionInfo(
     val id: UUID,
     val accountId: UUID,
     val amount: BigDecimal,
     val currency: Currency,
-    val transactionType: TransactionType
+    val type: TransactionInfoType
 ) : Entity()
 
-enum class TransactionType(val value: Int) {
+enum class TransactionInfoType(val value: Int) {
     CREDIT(1),
     DEBIT(2)
 }

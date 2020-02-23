@@ -1,6 +1,6 @@
 package domain
 
-import domain.account.Account
+import domain.account.BankAccount
 import domain.account.Money
 import domain.events.MoneyCredited
 import domain.events.MoneyDebited
@@ -10,19 +10,19 @@ import org.junit.Assert
 import org.junit.Test
 import java.util.*
 
-class AccountTest {
+class BankAccountTest {
     @Test
     fun `Account balance must be computed as a Money instance`() {
         // arrange
         val account = createFakeAccount()
 
         // act
-        val result = account.availableBalance
+        val result = account.balance
 
         // assert
         Assert.assertThat(result, Is.isA(Money::class.java))
-        Assert.assertThat(result.amount, equalTo(account.balance))
-        Assert.assertThat(result.currency, equalTo(account.currency))
+        Assert.assertThat(result.amount, equalTo(account.balance.amount))
+        Assert.assertThat(result.currency, equalTo(account.balance.currency))
     }
 
     @Test(expected = DomainException::class)
@@ -45,7 +45,7 @@ class AccountTest {
 
         // assert
         Assert.assertThat(result, IsNot.not(sameInstance(account)))
-        Assert.assertThat(result.balance, equalTo(100.toBigDecimal()))
+        Assert.assertThat(result.balance.amount, equalTo(100.toBigDecimal()))
     }
 
     @Test
@@ -59,7 +59,7 @@ class AccountTest {
 
         // assert
         Assert.assertThat(result, IsNot.not(sameInstance(account)))
-        Assert.assertThat(result.balance, IsEqual.equalTo(300.toBigDecimal()))
+        Assert.assertThat(result.balance.amount, IsEqual.equalTo(300.toBigDecimal()))
     }
 
     @Test
@@ -73,7 +73,7 @@ class AccountTest {
 
         // assert
         Assert.assertThat(result, IsNot.not(sameInstance(account)))
-        Assert.assertThat(result.balance, equalTo(300.toBigDecimal()))
+        Assert.assertThat(result.balance.amount, equalTo(300.toBigDecimal()))
         Assert.assertThat(result.domainEvents, hasItem(instanceOf(MoneyDebited::class.java)))
     }
 
@@ -88,10 +88,10 @@ class AccountTest {
 
         // assert
         Assert.assertThat(result, IsNot.not(sameInstance(account)))
-        Assert.assertThat(result.balance, equalTo(100.toBigDecimal()))
+        Assert.assertThat(result.balance.amount, equalTo(100.toBigDecimal()))
         Assert.assertThat(result.domainEvents, hasItem(instanceOf(MoneyCredited::class.java)))
     }
 
     private fun createFakeAccount() =
-        Account(UUID.randomUUID(), 200.toBigDecimal(), Currency.getInstance("EUR"))
+        BankAccount(UUID.randomUUID(), Money(200.toBigDecimal(), Currency.getInstance("EUR")))
 }

@@ -1,11 +1,12 @@
 package web
 
+import application.ValidationException
 import com.fasterxml.jackson.databind.SerializationFeature
 import domain.DomainException
-import domain.account.AccountRepository
-import infrastructure.NotFoundException
+import domain.account.BankAccountRepository
 import infrastructure.data.createFakeAccounts
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -17,8 +18,10 @@ import io.ktor.routing.Routing
 import io.ktor.server.engine.commandLineEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.pipeline.PipelineContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import mu.KLogger
 import mu.KotlinLogging
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
@@ -49,20 +52,27 @@ fun Application.module(testing: Boolean = false) {
         transactions()
     }
     install(StatusPages) {
-        exception<DomainException> { exception ->
-            logger.error { exception.message }
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to exception.message))
-            throw exception
+        exception<DomainException> { ex ->
+            logAndRespondBadRequest(logger, ex)
         }
-        exception<NotFoundException> { ex ->
-            logger.error { ex.message }
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to ex.message))
-            throw ex
+        exception<Throwable> { ex ->
+            logAndRespondBadRequest(logger, ex)
+        }
+        exception<ValidationException> { ex ->
+            logAndRespondBadRequest(logger, ex)
         }
     }
 
     GlobalScope.launch {
-        val accountRepository by inject<AccountRepository>()
+        val accountRepository by inject<BankAccountRepository>()
         accountRepository.createFakeAccounts()
     }
+}
+
+private suspend fun PipelineContext<Unit, ApplicationCall>.logAndRespondBadRequest(
+    logger: KLogger,
+    ex: Throwable
+) {
+    logger.error { ex.message }
+    call.respond(HttpStatusCode.BadRequest, mapOf("error" to ex.message))
 }

@@ -3,9 +3,7 @@ package web.routers
 import application.queries.AccountQueries
 import application.toUUID
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
@@ -21,13 +19,5 @@ fun Route.accounts() {
         get("/getAll") {
             call.respond(accountQueries.getAllAccounts())
         }
-    }
-
-    get("/") {
-        call.respondText("HELLO WORLD!", contentType = ContentType.Application.Json)
-    }
-
-    get("/json/jackson") {
-        call.respond(mapOf("hello" to "world"))
     }
 }

@@ -1,37 +1,39 @@
 package application.commands
 
-import application.MoneyTransferConcurrencyWrapper
+import application.MutexWrapper
+import application.ValidationException
 import application.toCurrency
 import domain.TransactionStatus
-import domain.account.AccountRepository
+import domain.account.BankAccountRepository
 import domain.transfer.MoneyTransfer
 import domain.transfer.MoneyTransferRepository
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import java.util.*
 
 class CreateTransferCommandHandler(
-    private val accountRepository: AccountRepository,
+    private val bankAccountRepository: BankAccountRepository,
     private val transferRepository: MoneyTransferRepository,
-    private val moneyTransferConcurrencyWrapper: MoneyTransferConcurrencyWrapper
+    private val mutexWrapper: MutexWrapper
 ) : CommandHandler<CreateTransferCommand, MoneyTransfer> {
 
     private val logger = KotlinLogging.logger {}
 
     override suspend fun handle(command: CreateTransferCommand): MoneyTransfer {
-        val lock = command.sourceAccountId to command.targetAccountId
+        if (command.sourceAccountId == command.targetAccountId) {
+            throw ValidationException("You cannot transfer money between same accounts!")
+        }
+
         try {
-            moneyTransferConcurrencyWrapper.lock(lock)
-            logger.trace { "Locked by: ${command.sourceAccountId} to ${command.targetAccountId}" }
+            mutexWrapper.lock()
 
-            val sourceAccount = accountRepository.getById(command.sourceAccountId)
-            val targetAccount = accountRepository.getById(command.targetAccountId)
+            val sourceAccount = bankAccountRepository.getById(command.sourceAccountId)
+            val targetAccount = bankAccountRepository.getById(command.targetAccountId)
 
-            val withdraw = sourceAccount.credit(command.toMoney())
-            accountRepository.update(withdraw)
+            val creditedAccount = sourceAccount.credit(command.toMoney())
+            bankAccountRepository.update(creditedAccount)
 
-            val deposit = targetAccount.debit(command.toMoney())
-            accountRepository.update(deposit)
+            val debitedAccount = targetAccount.debit(command.toMoney())
+            bankAccountRepository.update(debitedAccount)
 
             val moneyTransfer = MoneyTransfer(
                 UUID.randomUUID(), targetAccount.id, sourceAccount.id, command.amount,
@@ -40,8 +42,7 @@ class CreateTransferCommandHandler(
 
             return transferRepository.create(moneyTransfer)
         } finally {
-            moneyTransferConcurrencyWrapper.unlock(lock)
-            logger.trace { "Unlocked by: ${command.sourceAccountId} to ${command.targetAccountId}" }
+            mutexWrapper.unlock()
         }
     }
 }

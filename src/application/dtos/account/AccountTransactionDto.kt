@@ -1,7 +1,7 @@
 package application.dtos.account
 
-import domain.account.AccountTransaction
-import domain.account.TransactionType
+import domain.transaction.TransactionInfo
+import domain.transaction.TransactionInfoType
 import java.math.BigDecimal
 import java.util.*
 
@@ -12,11 +12,11 @@ data class AccountTransactionDto(
     val currency: Currency
 )
 
-fun mapFromAccountTransaction(transaction: AccountTransaction): AccountTransactionDto {
+fun mapFromAccountTransaction(transactionInfo: TransactionInfo): AccountTransactionDto {
     return AccountTransactionDto(
-        transaction.id,
-        transaction.accountId,
-        if (transaction.transactionType == TransactionType.CREDIT) transaction.amount.negate() else transaction.amount,
-        transaction.currency
+        transactionInfo.id,
+        transactionInfo.accountId,
+        if (transactionInfo.type == TransactionInfoType.CREDIT) transactionInfo.amount.negate() else transactionInfo.amount,
+        transactionInfo.currency
     )
 }

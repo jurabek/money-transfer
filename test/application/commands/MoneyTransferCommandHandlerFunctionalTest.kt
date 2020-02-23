@@ -1,12 +1,12 @@
-package com.jurabek.application
+package com.jurabek.application.commands
 
-import application.MoneyTransferConcurrencyWrapperIml
+import application.MutexWrapperIml
 import application.commands.CreateTransferCommand
 import application.commands.CreateTransferCommandHandler
 import domain.Mediator
 import domain.transfer.MoneyTransferRepository
 import infrastructure.data.createFakeAccounts
-import infrastructure.repositories.InMemoryAccountRepository
+import infrastructure.repositories.InMemoryBankAccountRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -23,15 +23,14 @@ class MoneyTransferCommandHandlerFunctionalTest {
             val mediator = mock(Mediator::class.java)
             val transferRepository = mock(MoneyTransferRepository::class.java)
 
-            val moneyTransferConcurrencyFacade = MoneyTransferConcurrencyWrapperIml()
-            val accountRepository = InMemoryAccountRepository(mediator)
+            val stripedMutex = MutexWrapperIml()
+            val accountRepository = InMemoryBankAccountRepository(mediator)
             accountRepository.createFakeAccounts()
 
             val account1 = accountRepository.getAll().toList()[0]
             val account2 = accountRepository.getAll().toList()[1]
             val account3 = accountRepository.getAll().toList()[3]
 
-            // action
             val command = CreateTransferCommand(
                 account1.id, account2.id, 1.toBigDecimal(),
                 "EUR", "Test transfer"
@@ -40,11 +39,19 @@ class MoneyTransferCommandHandlerFunctionalTest {
                 account1.id, account3.id, 1.toBigDecimal(),
                 "EUR", "Test transfer 2"
             )
-            val handler =
-                CreateTransferCommandHandler(accountRepository, transferRepository, moneyTransferConcurrencyFacade)
 
-            val handler2 =
-                CreateTransferCommandHandler(accountRepository, transferRepository, moneyTransferConcurrencyFacade)
+            // action
+            val handler = CreateTransferCommandHandler(
+                accountRepository,
+                transferRepository,
+                stripedMutex
+            )
+
+            val handler2 = CreateTransferCommandHandler(
+                accountRepository,
+                transferRepository,
+                stripedMutex
+            )
 
             val results1 = (1..500).map {
                 GlobalScope.async {
@@ -61,8 +68,8 @@ class MoneyTransferCommandHandlerFunctionalTest {
             // assert
             val withdrawAccount = accountRepository.getById(account1.id)
             val debitAccount = accountRepository.getById(account2.id)
-            Assert.assertThat(1000.toBigDecimal(), IsEqual.equalTo(withdrawAccount.balance))
-            Assert.assertThat(600.toBigDecimal(), IsEqual.equalTo(debitAccount.balance))
+            Assert.assertThat(1000.toBigDecimal(), IsEqual.equalTo(withdrawAccount.balance.amount))
+            Assert.assertThat(600.toBigDecimal(), IsEqual.equalTo(debitAccount.balance.amount))
         }
     }
 }

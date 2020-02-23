@@ -31,9 +31,11 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-jackson:$ktor_version")
     implementation("io.github.microutils:kotlin-logging:1.7.6")
+    implementation("com.google.guava:guava:28.2-jre")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.3")
     testImplementation("org.mockito:mockito-core:2.+")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.+")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

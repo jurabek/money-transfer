@@ -1,12 +1,12 @@
 package application.queries
 
 import application.dtos.account.mapFromAccountTransaction
-import domain.account.TransactionRepository
+import domain.transaction.TransactionInfoRepository
 import java.util.*
 
-class TransactionQueries(private val transactionRepository: TransactionRepository) {
+class TransactionQueries(private val transactionInfoRepository: TransactionInfoRepository) {
     fun getTransactionsByAccountId(accountId: UUID) =
-        transactionRepository.getAll()
+        transactionInfoRepository.getAll()
             .filter { it.accountId == accountId }
             .map { mapFromAccountTransaction(it) }
 }

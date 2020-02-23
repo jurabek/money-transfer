@@ -1,5 +1,6 @@
 package domain.transfer
 
+import domain.AggregateRoot
 import domain.Entity
 import domain.TransactionStatus
 import java.math.BigDecimal
@@ -15,4 +16,8 @@ data class MoneyTransfer(
     val status: TransactionStatus = TransactionStatus.PENDING,
     val reference: String? = null,
     val createdAt: ZonedDateTime = ZonedDateTime.now()
-) : Entity()
+) : Entity(), AggregateRoot {
+    init {
+
+    }
+}

@@ -29,7 +29,7 @@ data class Money(
 
     private fun validateAmount(amount: BigDecimal) {
         if (amount <= BigDecimal.ZERO)
-            throw DomainException("Invalid amount!")
+            throw DomainException("Invalid amount! Amount should not be Zero or Negative")
     }
 
     private fun validateCurrency(currency: Currency) {
