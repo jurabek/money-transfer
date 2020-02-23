@@ -34,7 +34,7 @@ In the diagram above the entry point is `Transfer Router` that handles HTTP Post
 - [kotlin](https://github.com/JetBrains/kotlin)
 - [ktor web framework](https://github.com/ktorio/ktor)
 - [koin dependency injection](https://github.com/InsertKoinIO/koin)
-- [detekt static analysis]()
+- [detekt static analysis](https://github.com/arturbosch/detekt)
 
 ### Prerequisites
 - Java Virtual Machine 8 or higher versions
