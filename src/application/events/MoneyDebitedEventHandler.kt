@@ -1,9 +1,9 @@
 package application.events
 
+import domain.events.MoneyDebited
 import domain.transaction.TransactionInfo
 import domain.transaction.TransactionInfoRepository
-import domain.transaction.TransactionInfoType
-import domain.events.MoneyDebited
+import domain.transaction.TransactionType
 import mu.KotlinLogging
 import java.util.*
 
@@ -16,11 +16,12 @@ class MoneyDebitedEventHandler(
         val debitTransaction = TransactionInfo(
             UUID.randomUUID(),
             event.accountId,
+            event.transferId,
             event.money.amount,
             event.money.currency,
-            TransactionInfoType.DEBIT
+            TransactionType.DEBIT
         )
-        transactionInfoRepository.create(debitTransaction)
+        transactionInfoRepository.add(debitTransaction)
         logger.trace { "Money debit has been successfully created for account: ${event.accountId}" }
     }
 }

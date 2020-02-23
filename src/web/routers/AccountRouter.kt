@@ -1,5 +1,6 @@
 package web.routers
 
+import application.ValidationException
 import application.queries.AccountQueries
 import application.toUUID
 import io.ktor.application.call
@@ -11,12 +12,12 @@ import org.koin.ktor.ext.inject
 
 fun Route.accounts() {
     val accountQueries by inject<AccountQueries>()
-    route("/accounts") {
+    route("api/v1/accounts") {
         get("/{id}/balance") {
-            val id = call.parameters["id"]?.toUUID() ?: throw IllegalStateException("Account ID must be provided")
+            val id = call.parameters["id"]?.toUUID() ?: throw ValidationException("Account ID must be provided")
             call.respond(accountQueries.getAccountBalanceById(id))
         }
-        get("/getAll") {
+        get("/all") {
             call.respond(accountQueries.getAllAccounts())
         }
     }

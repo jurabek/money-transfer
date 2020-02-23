@@ -4,6 +4,7 @@ import application.ValidationException
 import com.fasterxml.jackson.databind.SerializationFeature
 import domain.DomainException
 import domain.account.BankAccountRepository
+import infrastructure.NotFoundException
 import infrastructure.data.createFakeAccounts
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -55,8 +56,8 @@ fun Application.module(testing: Boolean = false) {
         exception<DomainException> { ex ->
             logAndRespondBadRequest(logger, ex)
         }
-        exception<Throwable> { ex ->
-            logAndRespondBadRequest(logger, ex)
+        exception<NotFoundException> { ex ->
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to ex.message))
         }
         exception<ValidationException> { ex ->
             logAndRespondBadRequest(logger, ex)

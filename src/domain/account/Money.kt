@@ -5,6 +5,16 @@ import domain.ValueObject
 import java.math.BigDecimal
 import java.util.*
 
+data class Credit(
+    val money: Money,
+    val transferId: UUID
+)
+
+data class Debit(
+    val money: Money,
+    val transferId: UUID
+)
+
 data class Money(
     val amount: BigDecimal,
     val currency: Currency

@@ -1,8 +1,7 @@
-package com.jurabek.application.commands
+package application.commands
 
 import application.MutexWrapperIml
-import application.commands.CreateTransferCommand
-import application.commands.CreateTransferCommandHandler
+import com.nhaarman.mockitokotlin2.mock
 import domain.Mediator
 import domain.transfer.MoneyTransferRepository
 import infrastructure.data.createFakeAccounts
@@ -13,15 +12,14 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.core.IsEqual
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito.mock
 
 class MoneyTransferCommandHandlerFunctionalTest {
     @Test
     fun `Debit and Withdraw should be synchronized when same account debits or credits in simultaneously`() {
         runBlocking {
             // arrange
-            val mediator = mock(Mediator::class.java)
-            val transferRepository = mock(MoneyTransferRepository::class.java)
+            val mediator = mock<Mediator>()
+            val transferRepository = mock<MoneyTransferRepository>()
 
             val stripedMutex = MutexWrapperIml()
             val accountRepository = InMemoryBankAccountRepository(mediator)

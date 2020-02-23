@@ -5,9 +5,10 @@ import application.ValidationException
 import application.toCurrency
 import domain.TransactionStatus
 import domain.account.BankAccountRepository
+import domain.account.Credit
+import domain.account.Debit
 import domain.transfer.MoneyTransfer
 import domain.transfer.MoneyTransferRepository
-import mu.KotlinLogging
 import java.util.*
 
 class CreateTransferCommandHandler(
@@ -16,31 +17,26 @@ class CreateTransferCommandHandler(
     private val mutexWrapper: MutexWrapper
 ) : CommandHandler<CreateTransferCommand, MoneyTransfer> {
 
-    private val logger = KotlinLogging.logger {}
-
     override suspend fun handle(command: CreateTransferCommand): MoneyTransfer {
         if (command.sourceAccountId == command.targetAccountId) {
             throw ValidationException("You cannot transfer money between same accounts!")
         }
-
         try {
             mutexWrapper.lock()
-
             val sourceAccount = bankAccountRepository.getById(command.sourceAccountId)
             val targetAccount = bankAccountRepository.getById(command.targetAccountId)
 
-            val creditedAccount = sourceAccount.credit(command.toMoney())
-            bankAccountRepository.update(creditedAccount)
-
-            val debitedAccount = targetAccount.debit(command.toMoney())
-            bankAccountRepository.update(debitedAccount)
-
             val moneyTransfer = MoneyTransfer(
-                UUID.randomUUID(), targetAccount.id, sourceAccount.id, command.amount,
+                UUID.randomUUID(), sourceAccount.id, targetAccount.id, command.amount,
                 command.currency.toCurrency(), TransactionStatus.COMPLETED, command.reference
             )
+            val debitedAccount = sourceAccount.debit(Debit(command.toMoney(), moneyTransfer.id))
+            bankAccountRepository.update(debitedAccount)
 
-            return transferRepository.create(moneyTransfer)
+            val creditedAccount = targetAccount.credit(Credit(command.toMoney(), moneyTransfer.id))
+            bankAccountRepository.update(creditedAccount)
+
+            return transferRepository.add(moneyTransfer)
         } finally {
             mutexWrapper.unlock()
         }

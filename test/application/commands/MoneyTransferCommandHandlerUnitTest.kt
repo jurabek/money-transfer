@@ -1,8 +1,7 @@
-package com.jurabek.application.commands
+package application.commands
 
 import application.MutexWrapper
-import application.commands.CreateTransferCommand
-import application.commands.CreateTransferCommandHandler
+import application.ValidationException
 import application.toCurrency
 import com.nhaarman.mockitokotlin2.*
 import domain.TransactionStatus
@@ -18,6 +17,30 @@ import org.junit.Test
 import java.util.*
 
 class MoneyTransferCommandHandlerUnitTest {
+
+    @Test(expected = ValidationException::class)
+    fun `When same account sending money should throw Validation Exception`() {
+        runBlocking {
+            val account1 = UUID.randomUUID()
+            val transferRepository = mock<MoneyTransferRepository>()
+            val accountRepository = mock<BankAccountRepository>()
+            val moneyTransferConcurrencyWrapper = mock<MutexWrapper>()
+
+            val command = CreateTransferCommand(
+                account1, account1, 100.toBigDecimal(),
+                "EUR", "Test transfer"
+            )
+
+            val handler = CreateTransferCommandHandler(
+                accountRepository,
+                transferRepository,
+                moneyTransferConcurrencyWrapper
+            )
+
+            handler.handle(command)
+        }
+    }
+
     @Test
     fun `handle should should create transfer when valid params`() {
         runBlocking {
@@ -44,7 +67,7 @@ class MoneyTransferCommandHandlerUnitTest {
 
             whenever(accountRepository.getById(account1.id)).thenReturn(account1)
             whenever(accountRepository.getById(account2.id)).thenReturn(account2)
-            whenever(transferRepository.create(any())).thenReturn(expectedMoneyTransfer)
+            whenever(transferRepository.add(any())).thenReturn(expectedMoneyTransfer)
 
             val command = CreateTransferCommand(
                 account1.id, account2.id, 100.toBigDecimal(),

@@ -6,17 +6,17 @@ import application.commands.CommandHandler
 import application.commands.CreateTransferCommand
 import application.commands.CreateTransferCommandHandler
 import application.events.EventHandler
-import application.events.MoneyDebitedEventHandler
 import application.events.MoneyCreditedEventHandler
+import application.events.MoneyDebitedEventHandler
 import application.queries.AccountQueries
 import application.queries.TransactionQueries
 import domain.Mediator
-import domain.events.MoneyDebited
 import domain.events.MoneyCredited
+import domain.events.MoneyDebited
 import domain.transfer.MoneyTransfer
-import web.ApplicationMediator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import web.ApplicationMediator
 
 val applicationModule = module {
     factory<EventHandler<MoneyDebited>>(named(MoneyDebited::class.java.name)) { MoneyDebitedEventHandler(get()) }
@@ -29,7 +29,7 @@ val applicationModule = module {
         )
     }
     factory { AccountQueries(get()) }
-    factory { TransactionQueries(get()) }
+    factory { TransactionQueries(get(), get()) }
     single<Mediator> { ApplicationMediator() }
     single<MutexWrapper> { MutexWrapperIml() }
 }

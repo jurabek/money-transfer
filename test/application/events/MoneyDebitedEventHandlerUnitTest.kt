@@ -1,24 +1,23 @@
-package com.jurabek.application.events
+package application.events
 
-import application.events.MoneyDebitedEventHandler
 import application.toCurrency
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import domain.account.Money
+import domain.events.MoneyDebited
 import domain.transaction.TransactionInfoRepository
-import domain.events.MoneyDebitRecorded
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.util.*
 
-class MoneyDebitRecordedEventHandlerUnitTest {
+class MoneyDebitedEventHandlerUnitTest {
     @Test
     fun `When handler is called debited transaction should be created`() {
         runBlocking {
             // arrange
-            val moneyDebited = MoneyDebitRecorded(
+            val moneyDebited = MoneyDebited(
                 Money(100.toBigDecimal(), "EUR".toCurrency()),
                 UUID.randomUUID(),
                 UUID.randomUUID()
@@ -30,7 +29,7 @@ class MoneyDebitRecordedEventHandlerUnitTest {
             debitedEventHandler.handle(moneyDebited)
 
             // assert
-            verify(transactionRepository, times(1)).create(any())
+            verify(transactionRepository, times(1)).add(any())
         }
     }
 }

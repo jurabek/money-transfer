@@ -1,9 +1,9 @@
 package application.events
 
+import domain.events.MoneyCredited
 import domain.transaction.TransactionInfo
 import domain.transaction.TransactionInfoRepository
-import domain.transaction.TransactionInfoType
-import domain.events.MoneyCredited
+import domain.transaction.TransactionType
 import mu.KotlinLogging
 import java.util.*
 
@@ -17,11 +17,12 @@ class MoneyCreditedEventHandler(
         val creditTransaction = TransactionInfo(
             UUID.randomUUID(),
             event.accountId,
+            event.transferId,
             event.money.amount,
             event.money.currency,
-            TransactionInfoType.CREDIT
+            TransactionType.CREDIT
         )
-        transactionInfoRepository.create(creditTransaction)
+        transactionInfoRepository.add(creditTransaction)
         logger.trace { "Money credit has been successfully created for account: ${event.accountId}" }
     }
 }

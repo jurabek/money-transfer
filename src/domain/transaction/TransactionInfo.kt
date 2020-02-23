@@ -7,12 +7,13 @@ import java.util.*
 data class TransactionInfo(
     val id: UUID,
     val accountId: UUID,
+    val transferId: UUID,
     val amount: BigDecimal,
     val currency: Currency,
-    val type: TransactionInfoType
+    val type: TransactionType
 ) : Entity()
 
-enum class TransactionInfoType(val value: Int) {
+enum class TransactionType(val value: Int) {
     CREDIT(1),
     DEBIT(2)
 }

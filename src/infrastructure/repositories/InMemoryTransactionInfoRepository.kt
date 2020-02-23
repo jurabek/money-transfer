@@ -17,7 +17,7 @@ class InMemoryTransactionInfoRepository(
 
     override fun getAll(): Collection<TransactionInfo> = transactions.values
 
-    override suspend fun create(transactionInfo: TransactionInfo): TransactionInfo {
+    override suspend fun add(transactionInfo: TransactionInfo): TransactionInfo {
         transactionInfo.domainEvents.forEach { mediator.publish(it) }
         transactionInfo.clearDomainEvents()
 

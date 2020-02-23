@@ -4,7 +4,7 @@ import domain.DomainEvent
 import domain.account.Money
 import java.util.*
 
-data class MoneyCreditRecorded(
+data class MoneyCredited(
     val money: Money,
     val accountId: UUID,
     val transferId: UUID

@@ -17,7 +17,7 @@ import org.koin.ktor.ext.inject
 
 fun Route.transfer() {
     val mediator by inject<Mediator>()
-    route("/transfer") {
+    route("api/v1/transfer") {
         post {
             val dto = call.receive<TransferRequestDto>()
             val createTransferCommand = dto.toCreateTransferCommand()

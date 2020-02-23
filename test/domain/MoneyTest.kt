@@ -1,6 +1,5 @@
-package com.jurabek.domain
+package domain
 
-import domain.DomainException
 import domain.account.Money
 import org.hamcrest.core.IsEqual
 import org.junit.Assert

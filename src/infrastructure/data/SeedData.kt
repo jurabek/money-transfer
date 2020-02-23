@@ -28,12 +28,12 @@ suspend inline fun BankAccountRepository.createFakeAccounts() {
         Money(BigDecimal.ZERO, "EUR".toCurrency())
     )
 
-    this.create(account1)
+    this.add(account1)
     logger.info { "Account1 ID: ${account1.id}" }
-    this.create(account2)
+    this.add(account2)
     logger.info { "Account2 ID: ${account2.id}" }
-    this.create(account3)
+    this.add(account3)
     logger.info { "Account3 ID: ${account3.id}" }
-    this.create(account4)
+    this.add(account4)
     logger.info { "Account4 ID: ${account4.id}" }
 }

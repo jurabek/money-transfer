@@ -18,6 +18,6 @@ class AccountQueries(private val bankAccountRepository: BankAccountRepository) {
 
     fun getAccountBalanceById(id: UUID): AccountBalanceDto {
         val account = bankAccountRepository.getById(id)
-        return AccountBalanceDto(account.balance.amount, account.balance.currency)
+        return AccountBalanceDto(account.balance.amount, account.balance.currency.toString())
     }
 }

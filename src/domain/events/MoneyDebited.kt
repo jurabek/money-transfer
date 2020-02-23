@@ -6,5 +6,6 @@ import java.util.*
 
 data class MoneyDebited(
     val money: Money,
-    val accountId: UUID
+    val accountId: UUID,
+    val transferId: UUID
 ) : DomainEvent

@@ -16,7 +16,7 @@ class InMemoryBankAccountRepository(
 
     override fun getAll() = accounts.values
 
-    override suspend fun create(bankAccount: BankAccount): BankAccount {
+    override suspend fun add(bankAccount: BankAccount): BankAccount {
         // before the creating object, raise domain events if there is any
         bankAccount.domainEvents.forEach { mediator.publish(it) }
         bankAccount.clearDomainEvents()
@@ -30,7 +30,6 @@ class InMemoryBankAccountRepository(
 
         bankAccount.domainEvents.forEach { mediator.publish(it) }
         bankAccount.clearDomainEvents()
-
         return accounts.replace(bankAccount.id, bankAccount) ?: throw NotFoundException("Account not found!")
     }
 }
