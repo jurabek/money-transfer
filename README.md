@@ -1,6 +1,6 @@
 # Transactions
 
-The basic idea is bank funds transfer from account A to account B that, if debiting from account A fails then the credit to account B should either never take place or be rolled back. From the user's perspective in actual bank transfers, first of all, the transaction must be created and then should be executed for processing, in our case considering as transfer happens between accounts in the same bank and same currency, hence validation should be pre-transaction record and result should be instant
+The basic idea of bank funds transfer from account A to account B that, if debiting from account A fails then the credit to account B should either never take place or be rolled back. From the user's perspective in actual bank transfers, first of all, the transaction must be created and then should be executed for processing, in our case considering as transfer happens between accounts in the same bank and same currency, hence validation should be pre-transaction record and result should be instant
 
 ### Example
 
@@ -37,7 +37,7 @@ In the diagram above the entry point is `Transfer Router` that handles HTTP Post
 - [detekt static analysis]()
 
 ### Prerequisites
-- JVM 8 or higher versions
+- Java Virtual Machine 8 or higher versions
 - Gradle 5.6.2
 
 ### How to run
@@ -60,7 +60,6 @@ curl --request GET \
 ```
 
 **Creating money transfer between two accounts**
-
 ```shell script
 curl --request POST \
   --url http://localhost:8080/api/v1/transfer \
@@ -75,7 +74,6 @@ curl --request POST \
 ```
 
 **Getting account transactions**
-
 ```shell script
 curl --request GET \
   --url http://localhost:8080/api/v1/transactions/account/8657792e-8329-4723-bf04-837d3649e9af
