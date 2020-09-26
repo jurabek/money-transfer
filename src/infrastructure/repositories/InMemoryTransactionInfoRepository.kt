@@ -5,12 +5,13 @@ import domain.transaction.TransactionInfo
 import domain.transaction.TransactionInfoRepository
 import infrastructure.NotFoundException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryTransactionInfoRepository(
     private val mediator: Mediator
 ) : TransactionInfoRepository {
 
-    private val transactions: MutableMap<UUID, TransactionInfo> = Collections.synchronizedMap(mutableMapOf())
+    private val transactions: MutableMap<UUID, TransactionInfo> = ConcurrentHashMap()
 
     override fun getById(id: UUID): TransactionInfo =
         transactions[id] ?: throw NotFoundException("Transaction not found!")

@@ -5,12 +5,13 @@ import domain.account.BankAccount
 import domain.account.BankAccountRepository
 import infrastructure.NotFoundException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryBankAccountRepository(
     private val mediator: Mediator
 ) : BankAccountRepository {
 
-    private val accounts: MutableMap<UUID, BankAccount> = Collections.synchronizedMap(mutableMapOf())
+    private val accounts: MutableMap<UUID, BankAccount> = ConcurrentHashMap()
 
     override fun getById(id: UUID) = accounts.get(id) ?: throw NotFoundException("Account not found!")
 

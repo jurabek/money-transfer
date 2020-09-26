@@ -4,9 +4,10 @@ import domain.transfer.MoneyTransfer
 import domain.transfer.MoneyTransferRepository
 import infrastructure.NotFoundException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryTransferRepository : MoneyTransferRepository {
-    private val transfers: MutableMap<UUID, MoneyTransfer> = Collections.synchronizedMap(mutableMapOf())
+    private val transfers: MutableMap<UUID, MoneyTransfer> = ConcurrentHashMap()
 
     override fun getById(id: UUID): MoneyTransfer {
         return transfers[id] ?: throw NotFoundException("Money transfer not found!")
